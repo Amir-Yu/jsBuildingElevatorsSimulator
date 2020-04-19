@@ -1,0 +1,47 @@
+#container {
+  width: 150px;
+  height: 400px;
+  position: relative;
+  background: yellow;
+  border: solid;
+}
+
+/* td:nth-child(even) { */
+#building > div:nth-child(even) {
+  background: #ccc;
+}
+/* td :nth-child(odd) { */
+/* #building > div :nth-child(odd) {
+  background: #fff;
+} */
+.floor {
+  height: 50px;
+  padding: 0%;
+  display: flex;
+  align-items: center;
+}
+
+.elevator {
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  background-color: rgb(192, 240, 255);
+  border-style: dashed;
+  border-width: 1px;
+  text-align: center;
+  line-height: 50px;
+}
+
+.button {
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  background-color: green;
+  cursor: pointer;
+  margin-left: 10px;
+  outline: none;
+}
+
+.button.on {
+  background-color: red;
+}
