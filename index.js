@@ -1,5 +1,7 @@
 const NUM_OF_FLOORS = 7;
 const NUM_OF_ELEVATORS = 2;
+const FLOOR_HEIGHT = 50; // px
+const DELAY_BETWEEN_FRAMES = 15; //ms
 
 function btnClick(elem, floor) {
   //console.log(elem, floor);
@@ -33,8 +35,8 @@ const building = {
         id: i,
         floor: 0,
         busy: false,
-        top: 50 * this.floors,
-        left: 50 * i,
+        top: FLOOR_HEIGHT * this.floors,
+        left: FLOOR_HEIGHT * i,
       });
       result += `<div class='elevator' 
       style='top:${this.elevators[i - 1].top}px;
@@ -51,12 +53,12 @@ const building = {
       floorsHTML += this.addButtonHTML(floor);
       floorsHTML += `</div>`;
       // map floors heights
-      this.floorsMap.set(NUM_OF_FLOORS - floor, floor * 50);
+      this.floorsMap.set(this.floors - floor, floor * FLOOR_HEIGHT);
     }
     return {
       floorsHTML,
-      width: (NUM_OF_ELEVATORS + 1) * 50,
-      height: (NUM_OF_FLOORS + 1) * 50,
+      width: (NUM_OF_ELEVATORS + 1) * FLOOR_HEIGHT,
+      height: (this.floors + 1) * FLOOR_HEIGHT,
     };
   },
   goToFloor: (destFloor) => {
@@ -97,27 +99,23 @@ const building = {
         elevatorElem[elevator.id - 1].style.top = currPos + "px";
       }
     };
-    let animate = setInterval(frame, 15);
+    let animate = setInterval(frame, DELAY_BETWEEN_FRAMES);
     elevator.busy = true;
   },
+  // prettier-ignore
   elevatorPicker: (destFloor) => {
-    const availableElevators = building.elevators.filter((x) => !x.busy);
+    const availableElevators = building.elevators.filter(x => !x.busy);
     if (availableElevators.length == 0) {
       // no elevator available for the moment ... we'll wait
+      return;
     } else {
       const closestDist = availableElevators.reduce(
-        (min, x) =>
-          Math.abs(x.floor - destFloor) < min
-            ? Math.abs(x.floor - destFloor)
-            : min,
-        NUM_OF_FLOORS
-      );
-      return availableElevators.filter(
-        (x) => Math.abs(x.floor - destFloor) == closestDist
-      )[0];
+        (min, x) => Math.abs(x.floor - destFloor) < min ? Math.abs(x.floor - destFloor) : min, NUM_OF_FLOORS);
+      return availableElevators.filter(x => Math.abs(x.floor - destFloor) == closestDist)[0];
     }
-  },
+  }
 };
+
 ////////////////////////////////////////////////////////
 document.getElementById("elevators").innerHTML = building.initElevators();
 const buildingElem = document.getElementById("building");
