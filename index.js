@@ -38,10 +38,10 @@ const building = {
         top: FLOOR_HEIGHT * this.floors,
         left: FLOOR_HEIGHT * i,
       });
-      result += `<div class='elevator' 
-      style='top:${this.elevators[i - 1].top}px;
-       left:${this.elevators[i - 1].left}px'>
-      ${i}</div>`;
+      result += `<div class='elevator' style='
+                top:${this.elevators[i - 1].top}px;
+                left:${this.elevators[i - 1].left}px'>
+                ${i}</div>`;
     }
     return result;
   },
@@ -61,35 +61,37 @@ const building = {
       height: (this.floors + 1) * FLOOR_HEIGHT,
     };
   },
+  // prettier-ignore
   goToFloor: (destFloor) => {
     // check if there is an elevator on this floor
-    if (
-      building.elevators.filter((x) => !x.busy && x.floor == destFloor).length >
-      0
-    ) {
+    if (building.elevators.filter(x => !x.busy && x.floor == destFloor).length > 0)
+    {
       building.clearButtonHTML(destFloor);
       playDingSound();
       return;
     }
     const elevator = building.elevatorPicker(destFloor);
+    // no elevator available for the moment so adding to the queue waithinglist
     if (elevator == null) {
       building.waitingList.push(destFloor);
       return;
     }
     let currPos = elevator.top;
     const destPos = building.floorsMap.get(destFloor);
-    const elevatorElem = document.getElementsByClassName("elevator");
+    //const elevatorElem = document.getElementsByClassName("elevator");
     const frame = () => {
       if (currPos == destPos) {
         clearInterval(animate);
+        // wait another 2sec (2000ms) before releasing the elevator
         setTimeout(function () {
           building.clearButtonHTML(destFloor);
           elevator.busy = false;
         }, 2000);
+        
         playDingSound();
         elevator.floor = destFloor;
         elevator.top = building.floorsMap.get(destFloor);
-        if (building.waitingList.length > 0) {
+        if (building.waitingList.length > 0) { // <-- check if the waithinglist queue is not empty
           setTimeout(function () {
             building.goToFloor(building.waitingList.shift());
           }, 2000);
@@ -105,22 +107,22 @@ const building = {
   // prettier-ignore
   elevatorPicker: (destFloor) => {
     const availableElevators = building.elevators.filter(x => !x.busy);
-    if (availableElevators.length == 0) {
-      // no elevator available for the moment ... we'll wait
-      return;
-    } else {
-      const closestDist = availableElevators.reduce(
-        (min, x) => Math.abs(x.floor - destFloor) < min ? Math.abs(x.floor - destFloor) : min, NUM_OF_FLOORS);
-      return availableElevators.filter(x => Math.abs(x.floor - destFloor) == closestDist)[0];
-    }
+    // no elevator available for the moment ... we'll wait
+    if (availableElevators.length == 0) { return; }
+
+    const closestDist = availableElevators.reduce(
+      (min, x) => Math.abs(x.floor - destFloor) < min ? Math.abs(x.floor - destFloor) : min, NUM_OF_FLOORS);
+    return availableElevators.filter(x => Math.abs(x.floor - destFloor) == closestDist)[0];
   }
 };
 
 ////////////////////////////////////////////////////////
 document.getElementById("elevators").innerHTML = building.initElevators();
+const buildingData = building.initBuilding();
 const buildingElem = document.getElementById("building");
 const containerElem = document.getElementById("container");
-const buildingData = building.initBuilding();
+const elevatorElem = document.getElementsByClassName("elevator");
+
 containerElem.style.width = buildingData.width + "px";
 containerElem.style.height = buildingData.height + "px";
 buildingElem.innerHTML = buildingData.floorsHTML;
